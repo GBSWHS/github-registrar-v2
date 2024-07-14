@@ -10,7 +10,9 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -18,6 +20,16 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+  })
+  @ApiResponse({
+    status: 403,
+    description:
+      '인트라넷에 접속 할 수 없습니다. 코딩관 WIFI에 연결되어 있는지 확인해 주세요',
+  })
+  @ApiOperation({ summary: 'Github Login' })
   @Get('github/login')
   async githubLogin(@Req() req: Request, @Res() res: Response) {
     const allowedIP = this.configService.get<string>('ALLOWED_IP');
@@ -40,6 +52,16 @@ export class AuthController {
     return res.redirect(githubAuthUrl);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+  })
+  @ApiResponse({
+    status: 403,
+    description:
+      '인트라넷에 접속 할 수 없습니다. 코딩관 WIFI에 연결되어 있는지 확인해 주세요',
+  })
+  @ApiOperation({ summary: 'Github Callback' })
   @Get('github/callback')
   async githubCallback(
     @Query('code') code: string,
