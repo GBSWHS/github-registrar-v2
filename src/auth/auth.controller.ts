@@ -8,7 +8,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -19,7 +19,19 @@ export class AuthController {
   ) {}
 
   @Get('github/login')
-  async githubLogin(@Res() res: Response) {
+  async githubLogin(@Req() req: Request, @Res() res: Response) {
+    const allowedIP = this.configService.get<string>('ALLOWED_IP');
+    const clientIP = req.ip;
+    console.log('allowedIP : ', allowedIP);
+    console.log('cliendIP : ', clientIP);
+
+    if (clientIP !== allowedIP) {
+      throw new HttpException(
+        '인트라넷에 접속 할 수 없습니다. 코딩관 WIFI에 연결되어 있는지 확인해 주세요',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const clientId = this.configService.get('GITHUB_CLIENT_ID');
     const redirectUri = encodeURIComponent(
       'http://localhost:3000/auth/github/callback',
@@ -34,18 +46,26 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
+    const allowedIP = this.configService.get<string>('ALLOWED_IP');
+    const clientIP = req.ip;
+
+    if (clientIP !== allowedIP) {
+      throw new HttpException(
+        '인트라넷에 접속 할 수 없습니다. 코딩관 WIFI에 연결되어 있는지 확인해 주세요',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     try {
       const accessToken = await this.authService.getAccessTokenFromCode(code);
       const userId =
         await this.authService.getUserIdFromAccessToken(accessToken);
 
-      // 초대 생성 시도
       try {
         await this.authService.createInvitationByUserId(userId);
         return res.redirect('https://github.com/orgs/GBSWHS/invitation');
       } catch (invitationError) {
         console.error('Error creating invitation:', invitationError);
-        // 초대 생성 실패 시 사용자에게 알리는 페이지로 리다이렉트
         return res.redirect('/invitation-error');
       }
     } catch (error) {
