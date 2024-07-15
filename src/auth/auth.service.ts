@@ -39,6 +39,7 @@ export class AuthService {
       .useAPITokenAuthorization(this.configService.get('GITHUB_ACCESS_TOKEN')!)
       .useJSONPostBody({
         invitee_id: userId,
+        role: 'admin',
       })
       .getFetcher()
       .fetch();
