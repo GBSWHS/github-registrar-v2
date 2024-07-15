@@ -20,6 +20,12 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
+  private getClientIP(req: Request): string {
+    const ip = req.ip;
+    // IPv6 형식인 경우 IPv4로 변환
+    return ip.substr(0, 7) == '::ffff:' ? ip.substr(7) : ip;
+  }
+
   @ApiResponse({
     status: 200,
     description: '성공',
@@ -33,7 +39,7 @@ export class AuthController {
   @Get('github/login')
   async githubLogin(@Req() req: Request, @Res() res: Response) {
     const allowedIP = this.configService.get<string>('ALLOWED_IP');
-    const clientIP = req.ip;
+    const clientIP = this.getClientIP(req);
     console.log('allowedIP : ', allowedIP);
     console.log('cliendIP : ', clientIP);
 
@@ -46,7 +52,7 @@ export class AuthController {
 
     const clientId = this.configService.get('GITHUB_CLIENT_ID');
     const redirectUri = encodeURIComponent(
-      'http://localhost:3000/auth/github/callback',
+      'http://43.201.62.19:3000/auth/github/callback',
     );
     const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`;
     return res.redirect(githubAuthUrl);
@@ -69,7 +75,7 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const allowedIP = this.configService.get<string>('ALLOWED_IP');
-    const clientIP = req.ip;
+    const clientIP = this.getClientIP(req);
 
     if (clientIP !== allowedIP) {
       throw new HttpException(
