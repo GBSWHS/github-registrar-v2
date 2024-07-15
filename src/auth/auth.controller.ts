@@ -6,13 +6,16 @@ import {
   Res,
   HttpException,
   HttpStatus,
+  UseFilters,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { HtmlExceptionFilter } from '../exception/html-exception.filter';
 
 @ApiTags('Auth')
+@UseFilters(HtmlExceptionFilter)
 @Controller('auth')
 export class AuthController {
   constructor(
