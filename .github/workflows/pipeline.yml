@@ -31,4 +31,4 @@ jobs:
             -e ACCESS_TOKEN=$ACCESS_TOKEN \
             -e ALLOWED_IP=$ALLOWED_IP \
             -e SERVER_URL=$SERVER_URL \
-            -p 3000:3000 --name registar jinseung0327/registar
+            -p 80:80 --name registar jinseung0327/registar
