@@ -1,0 +1,34 @@
+name: CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ['Docker Image CI']
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Docker image
+        run: sudo docker pull jinseung0327/registar:latest
+
+      - name: Delete Old docker container
+        run: sudo docker rm -f registar || true
+
+      - name: Run Docker Container
+        env:
+          CLIENT_ID: ${{secrets.CLIENT_ID}}
+          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+          ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}
+          ALLOWED_IP: ${{secrets.ALLOWED_IP}}
+          SERVER_URL: ${{secrets.SERVER_URL}}
+        run: |
+          sudo docker run -d 
+            -e CLIENT_ID=$CLIENT_ID \
+            -e CLIENT_SECRET=$CLIENT_SECRET \
+            -e ACCESS_TOKEN=$ACCESS_TOKEN \
+            -e ALLOWED_IP=$ALLOWED_IP \
+            -e SERVER_URL=$SERVER_URL \
+            -p 3000:3000 --name registar jinseung0327/registar

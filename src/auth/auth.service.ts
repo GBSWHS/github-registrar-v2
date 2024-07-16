@@ -11,8 +11,8 @@ export class AuthService {
       .useBasicHeaders()
       .useGetAccessTokenEndpoint()
       .useJSONPostBody({
-        client_id: this.configService.get('GITHUB_CLIENT_ID'),
-        client_secret: this.configService.get('GITHUB_CLIENT_SECRET'),
+        client_id: this.configService.get('CLIENT_ID'),
+        client_secret: this.configService.get('CLIENT_SECRET'),
         code,
       })
       .getFetcher()
@@ -36,7 +36,7 @@ export class AuthService {
     await new FetcherProxy()
       .useBasicHeaders()
       .useCreateInvitationEndpoint()
-      .useAPITokenAuthorization(this.configService.get('GITHUB_ACCESS_TOKEN')!)
+      .useAPITokenAuthorization(this.configService.get('ACCESS_TOKEN')!)
       .useJSONPostBody({
         invitee_id: userId,
         role: 'admin',

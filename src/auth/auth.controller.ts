@@ -53,7 +53,7 @@ export class AuthController {
       );
     }
     const serverUrl = this.configService.get<string>('SERVER_URL');
-    const clientId = this.configService.get('GITHUB_CLIENT_ID');
+    const clientId = this.configService.get('CLIENT_ID');
     const redirectUri = encodeURIComponent(`${serverUrl}/auth/github/callback`);
     const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`;
     return res.redirect(githubAuthUrl);
