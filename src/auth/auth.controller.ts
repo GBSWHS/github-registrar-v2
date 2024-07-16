@@ -45,8 +45,6 @@ export class AuthController {
   @Get('github/login')
   async githubLogin(@Req() req: Request, @Res() res: Response) {
     const allowedIP = this.configService.get<string>('ALLOWED_IP');
-    console.log('allowedIP : ', allowedIP);
-    console.log('clientIP : ', this.getClientIP(req));
 
     if (!this.isWhitelistedIP(req, allowedIP)) {
       throw new HttpException(
