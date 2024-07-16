@@ -7,7 +7,7 @@ declare const module: any;
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule, { cors: true });
-    const port = 3000;
+    const port = 80;
 
     const config = new DocumentBuilder()
       .setTitle('API')
