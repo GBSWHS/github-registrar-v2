@@ -25,7 +25,7 @@ jobs:
           ALLOWED_IP: ${{secrets.ALLOWED_IP}}
           SERVER_URL: ${{secrets.SERVER_URL}}
         run: |
-          sudo docker run -d 
+          sudo docker run -d \
             -e CLIENT_ID=$CLIENT_ID \
             -e CLIENT_SECRET=$CLIENT_SECRET \
             -e ACCESS_TOKEN=$ACCESS_TOKEN \
