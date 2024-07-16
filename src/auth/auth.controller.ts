@@ -24,9 +24,12 @@ export class AuthController {
   ) {}
 
   private getClientIP(req: Request): string {
-    const ip = req.ip;
-    // IPv6 형식인 경우 IPv4로 변환
-    return ip.substr(0, 7) == '::ffff:' ? ip.substr(7) : ip;
+    return (req.headers['cf-connecting-ip'] as string) || req.ip;
+  }
+
+  private isWhitelistedIP(req: Request, whitelist: string): boolean {
+    const clientIP = this.getClientIP(req);
+    return clientIP === whitelist;
   }
 
   @ApiResponse({
@@ -42,11 +45,10 @@ export class AuthController {
   @Get('github/login')
   async githubLogin(@Req() req: Request, @Res() res: Response) {
     const allowedIP = this.configService.get<string>('ALLOWED_IP');
-    const clientIP = this.getClientIP(req);
     console.log('allowedIP : ', allowedIP);
-    console.log('cliendIP : ', clientIP);
+    console.log('clientIP : ', this.getClientIP(req));
 
-    if (clientIP !== allowedIP) {
+    if (!this.isWhitelistedIP(req, allowedIP)) {
       throw new HttpException(
         '인트라넷에 접속 할 수 없습니다. 코딩관 WIFI에 연결되어 있는지 확인해 주세요',
         HttpStatus.FORBIDDEN,
@@ -76,9 +78,8 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const allowedIP = this.configService.get<string>('ALLOWED_IP');
-    const clientIP = this.getClientIP(req);
 
-    if (clientIP !== allowedIP) {
+    if (!this.isWhitelistedIP(req, allowedIP)) {
       throw new HttpException(
         '인트라넷에 접속 할 수 없습니다. 코딩관 WIFI에 연결되어 있는지 확인해 주세요',
         HttpStatus.FORBIDDEN,
