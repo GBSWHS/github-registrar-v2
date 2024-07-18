@@ -3,10 +3,10 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class HealthService {
   check() {
-    return 'OK!';
+    return 'OK';
   }
 
   dummy() {
-    return 'UP!';
+    return 'UP';
   }
 }
