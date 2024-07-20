@@ -1,4 +1,4 @@
-# Github Registrar V2
+# Github Registar V2
 
 경소고 / 경소마고 깃허브 org 자동 초대기
 
